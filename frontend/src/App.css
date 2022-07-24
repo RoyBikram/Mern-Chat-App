@@ -1,0 +1,8 @@
+.App {
+    min-height: 100vh;
+    background-color: #f3f3f3;
+    display: flex;
+    font-family: 'Roboto', sans-serif;
+    /* justify-content: center; */
+    /* align-items: center; */
+}
