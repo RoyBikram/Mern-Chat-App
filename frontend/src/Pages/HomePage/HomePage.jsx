@@ -8,19 +8,42 @@ import HomeImgUrl from '../../Res/Img/HomeImg.png';
 import { grey } from '@mui/material/colors';
 
 export default function HomePage() {
-    const [alignment, setAlignment] = React.useState('signup');
+    const [alignment, setAlignment] = React.useState('login');
 
     const handleChange = (event, newAlignment) => {
         setAlignment(newAlignment);
     };
     return (
-        <Container component='main' maxWidth='xs'>
+        <Container
+            component='main'
+            maxWidth='false'
+            sx={{
+                maxWidth: '500px',
+                p: '0',
+            }}
+        >
             <Box
                 sx={{
-                    marginTop: 8,
+                    my: {
+                        sm: 8,
+                    },
                     display: 'flex',
                     flexDirection: 'column',
                     alignItems: 'center',
+                    background: 'white',
+                    px: {
+                        sm: 5,
+                        xs:3
+                    },
+                    py: 5,
+                    borderRadius: {
+                        sm: 4,
+                    },
+                    boxSizing: 'border-box',
+                    minHeight: {
+                        xs: '100%',
+                        sm: 'fit-content',
+                    },
                 }}
             >
                 <Box
@@ -28,7 +51,7 @@ export default function HomePage() {
                     sx={{
                         height: 160,
                         width: 170,
-                        mb:1
+                        mb: 1,
                     }}
                     alt='The house from the offer.'
                     src={HomeImgUrl}
@@ -41,7 +64,6 @@ export default function HomePage() {
                         color: grey[800],
                     }}
                 >
-                    {' '}
                     Welcome To WebChat
                 </Box>
                 <ToggleButtonGroup
@@ -50,7 +72,7 @@ export default function HomePage() {
                     exclusive
                     onChange={handleChange}
                     size='large'
-                    fullWidth='true'
+                    fullWidth={true}
                 >
                     <ToggleButton
                         sx={{ border: 0, borderRadius: 15 }}

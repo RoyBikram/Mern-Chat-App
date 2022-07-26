@@ -1,8 +1,11 @@
-import { Box, Button, Grid } from '@mui/material';
+import { Alert, Box, Button, Grid, Snackbar } from '@mui/material';
 import TextField from '@mui/material/TextField';
 import { styled } from '@mui/material/styles';
 
-import React from 'react';
+import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import axios from 'axios';
+
 const StyledTextField = styled(TextField)({
     '& .MuiOutlinedInput-root': {
         '& fieldset': {
@@ -10,19 +13,46 @@ const StyledTextField = styled(TextField)({
         },
     },
 });
-const handleSubmit = (event) => {
-    event.preventDefault();
-    const data = new FormData(event.currentTarget);
-    console.log({
-        email: data.get('email'),
-        password: data.get('password'),
-    });
-};
 export const Login = () => {
+    const formRef = React.useRef();
+    const [DisplayToast, setDisplayToast] = useState(false);
+    const [ToastStatus, setToastStatus] = useState('info');
+    const [ToastTitle, setToastTitle] = useState('');
+    const [Email, setEmail] = useState();
+    const [Password, setPassword] = useState();
+    const Navigate = useNavigate();
+
+    const toast = (title, status) => {
+        setToastTitle(title);
+        setToastStatus(status);
+        setDisplayToast(true);
+    };
+
+    const handleSubmit = async (event) => {
+        // To Work The Required Field
+        formRef.current.reportValidity();
+        event.preventDefault();
+
+        try {
+            const config = {
+                headers: {
+                    'Content-type': 'application/json',
+                },
+            };
+            const { data } = await axios.post(
+                '/api/user/login',
+                { email: Email, password: Password },
+                config
+            );
+            console.log(data)
+            localStorage.setItem('userInfo', JSON.stringify(data))
+            Navigate('/chats')
+        } catch (error) {}
+    };
     return (
         <Box
             component='form'
-            noValidate
+            ref={formRef}
             onSubmit={handleSubmit}
             sx={{ mt: 5 }}
         >
@@ -35,7 +65,10 @@ export const Login = () => {
                         label='Email Address'
                         name='email'
                         autoComplete='email'
-                        // autoFocus
+                        autoFocus
+                        onChange={(e) => {
+                            setEmail(e.target.value);
+                        }}
                     />
                 </Grid>
                 <Grid item xs={12}>
@@ -47,6 +80,10 @@ export const Login = () => {
                         type='password'
                         id='password'
                         autoComplete='new-password'
+                        inputProps={{ minLength: '6' }}
+                        onChange={(e) => {
+                            setPassword(e.target.value);
+                        }}
                     />
                 </Grid>
             </Grid>
@@ -56,7 +93,7 @@ export const Login = () => {
                 variant='contained'
                 sx={{
                     mt: 5,
-                    mb: 10,
+                    mb: 0,
                     fontSize: 16,
                     fontWeight: 400,
                     textTransform: 'none',
@@ -66,6 +103,27 @@ export const Login = () => {
             >
                 Login
             </Button>
+            {/* Alert */}
+            <Snackbar
+                open={DisplayToast}
+                autoHideDuration={6000}
+                onClose={() => {
+                    setDisplayToast(false);
+                }}
+                key={'top center'}
+                anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
+            >
+                <Alert
+                    onClose={() => {
+                        setDisplayToast(false);
+                    }}
+                    severity={ToastStatus}
+                    sx={{ width: '100%' }}
+                    variant='filled'
+                >
+                    {ToastTitle}
+                </Alert>
+            </Snackbar>
         </Box>
     );
 };
