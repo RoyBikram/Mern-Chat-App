@@ -54,4 +54,19 @@ const authUser = asyncHandler(async (req, res) => {
     }
 });
 
-module.exports = { registerUser, authUser };
+const allUsers = asyncHandler(async (req, res) => { 
+    const keyword = req.query.search
+    const query = keyword ? {
+        $or: [
+            { name: { $regex: keyword, $options: 'i' } },
+            {email:{$regex:keyword, $options:'i'}}
+        ]
+    } : {}
+    console.log(keyword)
+    const users = await User.find(query).find({ _id: { $ne: req.user._id } })
+    res.send(users)
+    // res.status(401).send('Not authorized, token failed');
+// console.log(query)
+ })
+
+module.exports = { registerUser, authUser, allUsers };
