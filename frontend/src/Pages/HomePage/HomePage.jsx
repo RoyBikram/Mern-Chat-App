@@ -4,15 +4,28 @@ import Container from '@mui/material/Container';
 import { ToggleButton, ToggleButtonGroup } from '@mui/material';
 import { Login } from '../../Components/Auth/Login';
 import { SignUp } from '../../Components/Auth/SignUp';
-import HomeImgUrl from '../../Res/Img/HomeImg.png';
+import MainIcon from '../../Res/Img/MainIcon.png';
 import { grey } from '@mui/material/colors';
+import { useNavigate } from 'react-router-dom';
+import { ChatState } from '../../Context/ChatProvider';
+import { useEffect } from 'react';
 
 export default function HomePage() {
+    const { user } = ChatState();
+    const Navigate = useNavigate()
+
+
     const [alignment, setAlignment] = React.useState('login');
 
     const handleChange = (event, newAlignment) => {
         setAlignment(newAlignment);
     };
+    useEffect(() => {
+        if (user) {
+            Navigate('/chats')
+        }
+
+    }, [])
     return (
         <Container
             component='main'
@@ -54,7 +67,7 @@ export default function HomePage() {
                         mb: 1,
                     }}
                     alt='The house from the offer.'
-                    src={HomeImgUrl}
+                    src={MainIcon}
                 />
                 <Box
                     component='h2'

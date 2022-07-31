@@ -5,6 +5,7 @@ import { styled } from '@mui/material/styles';
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
+import { ChatState } from '../../Context/ChatProvider';
 
 const StyledTextField = styled(TextField)({
     '& .MuiOutlinedInput-root': {
@@ -21,6 +22,8 @@ export const Login = () => {
     const [Email, setEmail] = useState();
     const [Password, setPassword] = useState();
     const Navigate = useNavigate();
+
+    const {setUser} = ChatState()
 
     const toast = (title, status) => {
         setToastTitle(title);
@@ -44,8 +47,8 @@ export const Login = () => {
                 { email: Email, password: Password },
                 config
             );
-            console.log(data)
             localStorage.setItem('userInfo', JSON.stringify(data))
+            setUser(data)
             Navigate('/chats')
         } catch (error) {}
     };

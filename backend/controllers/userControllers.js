@@ -36,6 +36,7 @@ const registerUser = asyncHandler(async (req, res) => {
         throw new Error('User Can Not Created');
     }
 });
+// TODO Implement a response for "User not exist" and "Password is not current"
 
 const authUser = asyncHandler(async (req, res) => {
     const { email, password } = req.body;
