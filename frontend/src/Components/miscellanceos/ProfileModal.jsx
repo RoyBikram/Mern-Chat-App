@@ -73,7 +73,8 @@ export const ProfileModal = ({ DisplayState, ToggleProfile, Data }) => {
                                 },
                                 mb: 6,
                                 border: '4px solid',
-                                borderColor:blue[700]
+                                borderColor: blue[600],
+                                boxShadow:'0 0 20px 0px #1976d2d6'
                             }}
                             src={Data.pic}
                         />

@@ -11,11 +11,12 @@ const accessChat = asyncHandler(async (req, res) => {
         console.log('UserId param not sent with request');
         return res.status(400).send('User Is Not Authorized');
     }
-
     var isChat = await Chat.find({
         isGroupChat: false,
-        users: { $elemMatch: { $eq: req.user_id } },
-        users: { $elemMatch: { $eq: receiverUserId } },
+        $and:[
+            {users: { $elemMatch: { $eq: req.user._id } }},
+           {users: { $elemMatch: { $eq: receiverUserId } }}
+        ]
     })
         .populate('users', '-password')
         .populate('latestMessage');
@@ -24,7 +25,6 @@ const accessChat = asyncHandler(async (req, res) => {
         path: 'latestMessage.sender',
         select: 'name pic email',
     });
-
     if (isChat.length > 0) {
         res.send(isChat[0]);
     } else {

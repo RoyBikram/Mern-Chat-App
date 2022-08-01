@@ -12,13 +12,13 @@ import React from 'react';
 import SearchRoundedIcon from '@mui/icons-material/SearchRounded';
 import { useRef } from 'react';
 import { useState } from 'react';
-import { grey } from '@mui/material/colors';
+import { blue, grey } from '@mui/material/colors';
 import axios from 'axios';
 import { ChatState } from '../../Context/ChatProvider';
 import { UserListItem } from './UserListItem';
 
 const SideDrawer = ({ DrawerDisplay, ToggleDrawer }) => {
-    const { user, setSelectedChat } = ChatState();
+    const { user, setSelectedChat,Chats,setChats } = ChatState();
     const formRef = useRef();
     const [SearchQuery, setSearchQuery] = useState('');
     const [SearchLoading, setSearchLoading] = useState(false);
@@ -63,6 +63,7 @@ const SideDrawer = ({ DrawerDisplay, ToggleDrawer }) => {
                 { receiverUserId },
                 Config
             );
+            (!Chats.find((Chat) => Chat._id === data._id)) ? setChats([data, ...Chats]) :
             setSelectedChat(data);
             setChatLoading(false);
             setSearchResult([]);
@@ -90,6 +91,7 @@ const SideDrawer = ({ DrawerDisplay, ToggleDrawer }) => {
                         justifyContent: 'center',
                         flexDirection: 'column',
                         height: '100%',
+                        backgroundColor:grey[50]
                     }}
                 >
                     <Typography
@@ -98,14 +100,14 @@ const SideDrawer = ({ DrawerDisplay, ToggleDrawer }) => {
                             fontSize: '25px',
                             mt: {
                                 xs: 2,
-                                sm: 8
+                                sm: 8,
                             },
                             mb: {
                                 xs: 2,
-                                sm: 2
+                                sm: 2,
                             },
-                            color: grey[400],
-                            fontWeight:400,
+                            color: blue[600],
+                            fontWeight: 400,
                         }}
                     >
                         Search Your Friends
@@ -120,7 +122,7 @@ const SideDrawer = ({ DrawerDisplay, ToggleDrawer }) => {
                             alignItems: 'center',
                             my: {
                                 xs: 3,
-                                sm: 4
+                                sm: 4,
                             },
                         }}
                     >
@@ -154,7 +156,11 @@ const SideDrawer = ({ DrawerDisplay, ToggleDrawer }) => {
                             flexGrow: 1,
                             backgroundColor: grey[100],
                             width: '100%',
+                            boxShadow:
+                                '0px 4px 15px -5px rgb(0 0 0 / 41%) inset, 0px -4px 15px -5px rgb(0 0 0 / 41%) inset',
                             // mt: 4,
+                            overflowY: 'scroll',
+                            borderTop:`2px solid ${blue[600]}`
                         }}
                     >
                         {SearchLoading || ChatLoading ? (
@@ -175,7 +181,8 @@ const SideDrawer = ({ DrawerDisplay, ToggleDrawer }) => {
                                     display: 'flex',
                                     flexDirection: 'column',
                                     alignItems: 'center',
-                                    pt: 1,
+                                        pt: 1,
+                                    pb:8,
                                 }}
                             >
                                 {SearchResult.map((user, index) => {

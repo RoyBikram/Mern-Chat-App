@@ -89,7 +89,10 @@ export const Header = () => {
                     backgroundColor: 'white',
                     width: '100%',
                     height: '55px',
-                    mb: '16px',
+                    mb: {
+                        xs: 1,
+                        sm:2
+                    },
                     borderRadius: {
                         xs: 0,
                         sm: 2,
@@ -117,7 +120,7 @@ export const Header = () => {
                         sx={{
                             borderRadius: 6,
                             borderWidth: '2px',
-                            borderColor: blue[500],
+                            borderColor: blue[600],
                             ':hover': {
                                 borderWidth: '2px',
                             },
@@ -143,7 +146,7 @@ export const Header = () => {
                     src={MainIcon}
                     sx={{
                         height: '45px',
-                        width: '46px',
+                        width: '47px',
                         position: 'absolute',
                         transform: 'translate(-50%,0%)',
                         left: '50%',

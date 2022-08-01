@@ -41,7 +41,7 @@ const ChatPage = () => {
                     <Stack
                         direction='row'
                         spacing={2}
-                        sx={{ width: '100%', flexGrow: 1 }}
+                        sx={{ width: '100%', flexGrow: 1 ,position:'relative'}}
                     >
                         <MyChats />
                         <SelectedChat />
