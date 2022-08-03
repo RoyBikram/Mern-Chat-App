@@ -7,6 +7,8 @@ import { getSender } from '../Config/ChatLogic';
 import { ProfileModal } from './miscellanceos/ProfileModal';
 import { GroupModal } from './miscellanceos/GroupModal';
 import UpdateGroupDrawer from './miscellanceos/UpdateGroupDrawer';
+import { MessageRenderingSection } from './SelectedChat/MessageRenderingSection';
+import { MessageEnteringSection } from './SelectedChat/MessageEnteringSection';
 export const SelectedChat = () => {
     const { user, SelectedChat, setSelectedChat } = ChatState();
     const [ReceiverUser, setReceiverUser] = useState(null);
@@ -77,47 +79,52 @@ export const SelectedChat = () => {
             }}
         >
             {ReceiverUser ? (
-                <Box
-                    sx={{
-                        display: 'flex',
-                        alignItems: 'center',
-                        padding: {
-                            xs: 1,
-                            sm: 2,
-                        },
-                        borderBottom: `2px solid ${grey[200]}`,
-                    }}
-                >
-                    <IconButton
-                        size='large'
-                        onClick={() => {
-                            setIsOpen(false);
-                            setTimeout(() => {
-                                setSelectedChat(null);
-                            }, 500);
-                        }}
+                <Box sx={{display:'flex',flexDirection:'column',height:'100%'}}>
+                    <Box
                         sx={{
-                            '@media screen and (min-width: 700px)': {
-                                display: 'none',
+                            display: 'flex',
+                            alignItems: 'center',
+                            // flexDirection:'column',
+                            padding: {
+                                xs: 1,
+                                sm: 2,
                             },
+                            borderBottom: `2px solid ${grey[200]}`,
                         }}
                     >
-                        <ArrowBackIosRoundedIcon sx={{ fontSize: 23 }} />
-                    </IconButton>
-                    <Box sx={{ display: 'flex' }}>
                         <IconButton
-                            sx={{ ml: 1, my: '4px', p: '0' }}
-                            onClick={handleAvatarClick}
+                            size='large'
+                            onClick={() => {
+                                setIsOpen(false);
+                                setTimeout(() => {
+                                    setSelectedChat(null);
+                                }, 500);
+                            }}
+                            sx={{
+                                '@media screen and (min-width: 700px)': {
+                                    display: 'none',
+                                },
+                            }}
                         >
-                            <Avatar
-                                src={ReceiverUser.pic}
-                                sx={{ width: 40, height: 40 }}
-                            />
+                            <ArrowBackIosRoundedIcon sx={{ fontSize: 23 }} />
                         </IconButton>
-                        <Typography sx={{ ml: 2, mt: 2, color: grey[900] }}>
-                            {ReceiverUser.name}
-                        </Typography>
+                        <Box sx={{ display: 'flex' }}>
+                            <IconButton
+                                sx={{ ml: 1, my: '4px', p: '0' }}
+                                onClick={handleAvatarClick}
+                            >
+                                <Avatar
+                                    src={ReceiverUser.pic}
+                                    sx={{ width: 40, height: 40 }}
+                                />
+                            </IconButton>
+                            <Typography sx={{ ml: 2, mt: 2, color: grey[900] }}>
+                                {ReceiverUser.name}
+                            </Typography>
+                        </Box>
                     </Box>
+                    <MessageRenderingSection />
+                    <MessageEnteringSection />
                 </Box>
             ) : (
                 <Box></Box>

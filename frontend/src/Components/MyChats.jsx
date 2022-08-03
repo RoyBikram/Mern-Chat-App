@@ -107,7 +107,7 @@ export const MyChats = () => {
                     width: '100%',
 
                     overflowY: 'scroll',
-                    borderTop: `2px solid ${blue[600]}`,
+                    borderTop: `2px solid ${grey[200]}`,
                     boxSizing: 'border-box',
                     px: 2,
                     pt: 1,

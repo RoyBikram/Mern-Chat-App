@@ -5,6 +5,7 @@ const connectDB = require('./config/db');
 const userRouters = require('./routes/userRoutes');
 const pathNotFoundRouters = require('./routes/pathNotFoundRouters');
 const chatRouters = require('./routes/chatRoutes');
+const messageRouters = require('./routes/messageRouters');
 
 const app = express();
 dotenv.config();
@@ -17,6 +18,7 @@ app.get('/', (req, res) => {
 app.use('/api/chat', chatRouters);
 
 app.use('/api/user', userRouters)
+app.use('/api/message', messageRouters)
 app.use(pathNotFoundRouters)
 const PORT = process.env.PORT || 5000;
 
