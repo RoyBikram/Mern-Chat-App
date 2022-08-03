@@ -4,14 +4,52 @@ import { ChatState } from '../Context/ChatProvider';
 import ArrowBackIosRoundedIcon from '@mui/icons-material/ArrowBackIosRounded';
 import { blue, grey } from '@mui/material/colors';
 import { getSender } from '../Config/ChatLogic';
+import { ProfileModal } from './miscellanceos/ProfileModal';
+import { GroupModal } from './miscellanceos/GroupModal';
+import UpdateGroupDrawer from './miscellanceos/UpdateGroupDrawer';
 export const SelectedChat = () => {
     const { user, SelectedChat, setSelectedChat } = ChatState();
     const [ReceiverUser, setReceiverUser] = useState(null);
     const [IsOpen, setIsOpen] = useState(false);
+    const [DisplayProfile, setDisplayProfile] = useState(false);
+    const [DisplayGroup, setDisplayGroup] = useState(false);
+    const [DisplayUpdateDrawer, setDisplayUpdateDrawer] = useState(false);
+
+    const handleAvatarClick = () => {
+        if (SelectedChat.isGroupChat) {
+            setDisplayGroup((state) => !state);
+        } else {
+            setDisplayProfile((state) => !state);
+        }
+    };
+
+    // * Toggle ProfileModal
+    const ToggleProfile = () => {
+        setDisplayProfile(!DisplayProfile);
+    };
+    // * Toggle Group Modal
+    const ToggleGroup = () => {
+        setDisplayGroup((state) => !state);
+    };
+    // * Toggle Group Update Drawer
+    const ToggleGroupUpdate = () => {
+        setDisplayUpdateDrawer((state) => !state);
+    };
+
     useEffect(() => {
         if (SelectedChat) {
             setIsOpen(true);
-            setReceiverUser(getSender(user, SelectedChat.users));
+            // console.log(SelectedChat);
+            setReceiverUser(
+                SelectedChat.isGroupChat
+                    ? {
+                          name: SelectedChat.chatName,
+                          pic: `https://img.icons8.com/external-febrian-hidayat-glyph-febrian-hidayat/344/external-group-user-interface-febrian-hidayat-glyph-febrian-hidayat.png`,
+                          users: SelectedChat.users,
+                          admin: SelectedChat.groupAdmin,
+                      }
+                    : getSender(user, SelectedChat.users)
+            );
         }
     }, [SelectedChat]);
 
@@ -67,11 +105,16 @@ export const SelectedChat = () => {
                         <ArrowBackIosRoundedIcon sx={{ fontSize: 23 }} />
                     </IconButton>
                     <Box sx={{ display: 'flex' }}>
-                        <Avatar
-                            src={ReceiverUser.pic}
-                            sx={{ ml: 1, width: 40, height: 40, my: '4px' }}
-                        />
-                        <Typography sx={{ ml: 2, mt: 1, color: grey[900] }}>
+                        <IconButton
+                            sx={{ ml: 1, my: '4px', p: '0' }}
+                            onClick={handleAvatarClick}
+                        >
+                            <Avatar
+                                src={ReceiverUser.pic}
+                                sx={{ width: 40, height: 40 }}
+                            />
+                        </IconButton>
+                        <Typography sx={{ ml: 2, mt: 2, color: grey[900] }}>
                             {ReceiverUser.name}
                         </Typography>
                     </Box>
@@ -79,6 +122,25 @@ export const SelectedChat = () => {
             ) : (
                 <Box></Box>
             )}
+            {DisplayProfile && (
+                <ProfileModal
+                    DisplayState={DisplayProfile}
+                    ToggleProfile={ToggleProfile}
+                    Data={ReceiverUser}
+                />
+            )}
+            {DisplayGroup && (
+                <GroupModal
+                    UpdateButtonClick={ToggleGroupUpdate}
+                    DisplayState={DisplayGroup}
+                    ToggleGroup={ToggleGroup}
+                    Data={ReceiverUser}
+                />
+            )}
+            <UpdateGroupDrawer
+                DisplayDrawer={DisplayUpdateDrawer}
+                ToggleDrawer={ToggleGroupUpdate}
+            />
         </Box>
     );
 };

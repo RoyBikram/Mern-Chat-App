@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { ChatState } from '../../Context/ChatProvider';
 import Box from '@mui/material/Box';
 import { Header } from '../../Components/Header';

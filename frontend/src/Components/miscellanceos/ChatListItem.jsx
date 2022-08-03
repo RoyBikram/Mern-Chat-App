@@ -12,7 +12,8 @@ export const ChatListItem = ({ user, handleClick,isSelected }) => {
                 p: 2,
                 backgroundColor: 'white',
                 transition: '0.2s all',
-                boxShadow: '0 0 4px 0 #00000052',
+                // boxShadow: "rgba(0, 0, 0, 0.16) 0px 1px 4px",
+                // boxShadow: '0 0 4px 0 #00000052',
                 '@media screen and (min-width: 700px)': {
                     
                     border: `${isSelected ? `2px solid ${blue[600]}` : '2px solid white'}`,
@@ -29,7 +30,7 @@ export const ChatListItem = ({ user, handleClick,isSelected }) => {
             <Avatar alt={user.name} src={user.pic} sx={{mr:2,width:50,height:50}} />
             <Box>
                 <Typography sx={{color:grey[900]}}>{user.name}</Typography>
-                <Typography sx={{fontSize:'14px',color:grey[600]}}>{user.email}</Typography>
+                <Typography sx={{fontSize:'14px',color:grey[600]}}>Latest Mesage</Typography>
             </Box>
         </Box>
     );

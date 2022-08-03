@@ -1,6 +1,6 @@
 import { Box } from '@mui/system';
 import axios from 'axios';
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { ChatState } from '../Context/ChatProvider';
 import Stack from '@mui/material/Stack';
 import { Button, Typography } from '@mui/material';
@@ -8,9 +8,11 @@ import AddRoundedIcon from '@mui/icons-material/AddRounded';
 import { blue, grey } from '@mui/material/colors';
 import { ChatListItem } from './miscellanceos/ChatListItem';
 import { getSender } from '../Config/ChatLogic';
+import CreateGroupDrawer from './miscellanceos/CreateGroupDrawer';
 export const MyChats = () => {
-    const { user, SelectedChat, setSelectedChat, Chats, setChats } =
+    const { user, SelectedChat, setSelectedChat,FetchChatAgain, Chats, setChats } =
         ChatState();
+    const [DisplayDrawer, setDisplayDrawer] = useState(false);
     const fetchChat = async () => {
         try {
             const Config = {
@@ -25,9 +27,13 @@ export const MyChats = () => {
         }
     };
 
+    const ToggleDrawer = () => {
+        setDisplayDrawer(!DisplayDrawer);
+    };
+
     useEffect(() => {
         fetchChat();
-    }, []);
+    }, [FetchChatAgain]);
 
     return (
         <Box
@@ -62,7 +68,7 @@ export const MyChats = () => {
                 sx={{
                     p: {
                         xs: 2,
-                        sm:3
+                        sm: 3,
                     },
                     width: '100%',
                 }}
@@ -78,6 +84,7 @@ export const MyChats = () => {
                 <Button
                     size='small'
                     variant='outlined'
+                    onClick={ToggleDrawer}
                     sx={{
                         borderRadius: 10,
                         textTransform: 'capitalize',
@@ -98,28 +105,39 @@ export const MyChats = () => {
                 sx={{
                     flexGrow: 1,
                     width: '100%',
-                   
+
                     overflowY: 'scroll',
                     borderTop: `2px solid ${blue[600]}`,
                     boxSizing: 'border-box',
                     px: 2,
                     pt: 1,
                     pb: 1,
-                    
-                    backgroundColor:grey[50]
+
+                    backgroundColor: grey[50],
                 }}
             >
-                {Chats.map((Chat, index) => (
-                    <ChatListItem
+                {Chats.map((Chat, index) => {
+                    return (<ChatListItem
                         key={index}
-                        user={getSender(user, Chat.users)}
-                        isSelected = {SelectedChat&&SelectedChat._id === Chat._id}
+                        //TODO: Change the group icon to pic
+                        user={
+                            Chat.isGroupChat
+                                ? { name: Chat.chatName, pic: `https://img.icons8.com/external-febrian-hidayat-glyph-febrian-hidayat/344/external-group-user-interface-febrian-hidayat-glyph-febrian-hidayat.png` }
+                                : getSender(user, Chat.users)
+                        }
+                        isSelected={
+                            SelectedChat && SelectedChat._id === Chat._id
+                        }
                         handleClick={() => {
-                            setSelectedChat(Chat)
+                            setSelectedChat(Chat);
                         }}
-                    />
-                ))}
+                    />)
+                    })}
             </Stack>
+            <CreateGroupDrawer
+                DisplayDrawer={DisplayDrawer}
+                ToggleDrawer={ToggleDrawer}
+            />
         </Box>
     );
 };

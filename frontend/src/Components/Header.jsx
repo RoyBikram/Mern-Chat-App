@@ -27,7 +27,7 @@ import PersonRoundedIcon from '@mui/icons-material/PersonRounded';
 import LogoutRoundedIcon from '@mui/icons-material/LogoutRounded';
 import { ProfileModal } from './miscellanceos/ProfileModal';
 import { useNavigate } from 'react-router-dom';
-import SideDrawer from './miscellanceos/SideDrawer';
+import SearchFriendsDrawer from './miscellanceos/SearchFriendsDrawer';
 
 
 
@@ -153,7 +153,7 @@ export const Header = () => {
                     }}
                 ></Box>
 
-                <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                <Box sx={{ display: 'flex', alignItems: 'center',gap:1 }}>
                     <IconButton onClick={handleNotificationClick}>
                         <Badge badgeContent={1} color='primary'>
                             <NotificationsNoneRoundedIcon color='action' />
@@ -185,11 +185,11 @@ export const Header = () => {
                             No Notification
                         </MenuItem>
                     </Menu>
-                    <IconButton onClick={handleAvatarClick}>
+                    <IconButton onClick={handleAvatarClick} sx={{p:0}}>
                         <Avatar
                             alt={user.name}
                             src={user.pic}
-                            sx={{ height: '35px', width: '35px' }}
+                            sx={{ height: '40px', width: '40px' }}
                         />
                     </IconButton>
                     <Menu
@@ -237,7 +237,7 @@ export const Header = () => {
                     </Menu>
                 </Box>
             </Box>
-            <SideDrawer DrawerDisplay={DrawerDisplay} ToggleDrawer = {ToggleDrawer}/>
+            <SearchFriendsDrawer DrawerDisplay={DrawerDisplay} ToggleDrawer = {ToggleDrawer}/>
             <ProfileModal
                 DisplayState={DisplayProfile}
                 ToggleProfile={ToggleProfile}

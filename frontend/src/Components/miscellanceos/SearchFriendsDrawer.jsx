@@ -16,9 +16,10 @@ import { blue, grey } from '@mui/material/colors';
 import axios from 'axios';
 import { ChatState } from '../../Context/ChatProvider';
 import { UserListItem } from './UserListItem';
+import ClearRoundedIcon from '@mui/icons-material/ClearRounded';
 
-const SideDrawer = ({ DrawerDisplay, ToggleDrawer }) => {
-    const { user, setSelectedChat,Chats,setChats } = ChatState();
+const SearchFriendsDrawer = ({ DrawerDisplay, ToggleDrawer }) => {
+    const { user, setSelectedChat, Chats, setChats } = ChatState();
     const formRef = useRef();
     const [SearchQuery, setSearchQuery] = useState('');
     const [SearchLoading, setSearchLoading] = useState(false);
@@ -63,8 +64,9 @@ const SideDrawer = ({ DrawerDisplay, ToggleDrawer }) => {
                 { receiverUserId },
                 Config
             );
-            (!Chats.find((Chat) => Chat._id === data._id)) ? setChats([data, ...Chats]) :
-            setSelectedChat(data);
+            !Chats.find((Chat) => Chat._id === data._id)
+                ? setChats([data, ...Chats])
+                : setSelectedChat(data);
             setChatLoading(false);
             setSearchResult([]);
             ToggleDrawer();
@@ -86,12 +88,13 @@ const SideDrawer = ({ DrawerDisplay, ToggleDrawer }) => {
                 <Box
                     sx={{
                         width: '350px',
+                        position: 'relative',
                         display: 'flex',
                         alignItems: 'center',
                         justifyContent: 'center',
                         flexDirection: 'column',
                         height: '100%',
-                        backgroundColor:grey[50]
+                        backgroundColor: grey[50],
                     }}
                 >
                     <Typography
@@ -160,7 +163,7 @@ const SideDrawer = ({ DrawerDisplay, ToggleDrawer }) => {
                                 '0px 4px 15px -5px rgb(0 0 0 / 41%) inset, 0px -4px 15px -5px rgb(0 0 0 / 41%) inset',
                             // mt: 4,
                             overflowY: 'scroll',
-                            borderTop:`2px solid ${blue[600]}`
+                            borderTop: `2px solid ${blue[600]}`,
                         }}
                     >
                         {SearchLoading || ChatLoading ? (
@@ -181,8 +184,8 @@ const SideDrawer = ({ DrawerDisplay, ToggleDrawer }) => {
                                     display: 'flex',
                                     flexDirection: 'column',
                                     alignItems: 'center',
-                                        pt: 1,
-                                    pb:8,
+                                    pt: 1,
+                                    pb: 8,
                                 }}
                             >
                                 {SearchResult.map((user, index) => {
@@ -199,10 +202,21 @@ const SideDrawer = ({ DrawerDisplay, ToggleDrawer }) => {
                             </Box>
                         )}
                     </Box>
+                    <IconButton
+                        onClick={ToggleDrawer}
+                        aria-label='Close'
+                        sx={{
+                            position: 'absolute',
+                            top: 5,
+                            right: 5,
+                        }}
+                    >
+                        <ClearRoundedIcon />
+                    </IconButton>
                 </Box>
             </Drawer>
         </div>
     );
 };
 
-export default SideDrawer;
+export default SearchFriendsDrawer;
