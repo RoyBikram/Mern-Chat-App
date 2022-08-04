@@ -22,4 +22,35 @@ app.use('/api/message', messageRouters)
 app.use(pathNotFoundRouters)
 const PORT = process.env.PORT || 5000;
 
-app.listen(PORT, console.log(`Backend Start At ${PORT}`));
+const server = app.listen(PORT, console.log(`Backend Start At ${PORT}`));
+
+const io = require('socket.io')(server, {
+    pingTimeout: 60000,
+    cors: {
+        origin:'http://localhost:3001'
+    }
+})
+
+io.on('connection', (Socket) => { 
+    console.log('Connected To Socket.io...')
+    // Socket.emit('connected')
+    Socket.on('setup', (userData) => {
+        Socket.join(userData._id)
+    })
+    
+    Socket.on('join room',(chatId) => { 
+        Socket.join(chatId)
+    })
+    
+    Socket.on('new message', (Message) => { 
+        if (!Message.chat) {
+            return
+        }
+        // console.log(Message)
+        Socket.in(Message.sender._id).emit('message received', Message)
+        Message.chat.users.forEach(user => {
+            if (user._id === Message.sender._id) return
+             Socket.in(user._id).emit('message received', Message)
+        });
+     })
+ })

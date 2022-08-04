@@ -11,7 +11,7 @@ function MessageCard({ Data, IsLast }) {
             setIsOwnMessage(true);
         }
     }, []);
-
+    
     return (
         <Box
             sx={{

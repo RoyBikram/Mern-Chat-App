@@ -1,21 +1,40 @@
 import React, { useEffect, useState } from 'react';
-import { ChatState } from '../../Context/ChatProvider';
 import Box from '@mui/material/Box';
 import { Header } from '../../Components/Header';
 import { MyChats } from '../../Components/MyChats';
-import { SelectedChat } from '../../Components/SelectedChat';
+import { SelectedChatComponent } from '../../Components/SelectedChatComponent';
 import { Grid, Stack } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
+import { Socket } from '../../Config/SocketConfig';
+import { ChatState } from '../../Context/ChatProvider';
 
 const ChatPage = () => {
-    const { user } = ChatState();
+    const { user, SelectedChat, setNewMessage } = ChatState();
     const Navigate = useNavigate();
 
     useEffect(() => {
         if (!user) {
             Navigate('/');
+        } else {
+            // ConnectSocket()
+            Socket.emit('setup', user);
+            // Socket.on('connected', () => {
+            // })
         }
-    }, []);
+    });
+
+    useEffect(() => {
+        if (user) {
+            Socket.on('message received', (message) => {
+                console.log(SelectedChat)
+                if (message.chat._id === SelectedChat._id) {
+                    setNewMessage(message);
+                } else {
+                    console.log(message.sender.name + ' : ' + message.content);
+                }
+            });
+        }
+    }, [SelectedChat]);
 
     return (
         <>
@@ -41,10 +60,14 @@ const ChatPage = () => {
                     <Stack
                         direction='row'
                         spacing={2}
-                        sx={{ width: '100%', flexGrow: 1 ,position:'relative'}}
+                        sx={{
+                            width: '100%',
+                            flexGrow: 1,
+                            position: 'relative',
+                        }}
                     >
                         <MyChats />
-                        <SelectedChat />
+                        <SelectedChatComponent />
                     </Stack>
                 </Box>
             ) : (

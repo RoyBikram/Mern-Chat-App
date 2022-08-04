@@ -5,6 +5,7 @@ import SendIcon from '@mui/icons-material/Send';
 import { blue, grey } from '@mui/material/colors';
 import { ChatState } from '../../Context/ChatProvider';
 import axios from 'axios';
+import { Socket } from '../../Config/SocketConfig';
 
 export const MessageEnteringSection = () => {
     const {user,SelectedChat} = ChatState()
@@ -28,7 +29,8 @@ export const MessageEnteringSection = () => {
                 content:message,
                 chatId: SelectedChat._id
             }, Config)
-            console.log(data)
+            // console.log(data)
+            Socket.emit("new message", data)
             // TODO! Have to add message to the local messages but i want to feach this data from server real time
         } catch (error) {
             console.log(error.message)

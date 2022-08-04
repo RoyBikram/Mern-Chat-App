@@ -7,34 +7,15 @@ import { ChatState } from '../../Context/ChatProvider';
 import MessageBodyBg from '../../Res/Img/MessageBodyBg.png';
 import MessageCard from '../miscellanceos/MessageCard';
 
-export const MessageRenderingSection = () => {
-    const [Messages, setMessages] = useState(null);
+export const MessageRenderingSection = ({Messages, FetchMessages}) => {
+    // const [Messages, setMessages] = useState(null);
     // const [IsMessageLoading, setIsMessageLoading] = useState(false);
     const { user, SelectedChat } = ChatState();
 
-    const fetchMessages = async () => {
-        if (!SelectedChat) return;
-        // setIsMessageLoading(true);
-        try {
-            const Config = {
-                headers: {
-                    Aothorization: `Bearer ${user.token}`,
-                },
-            };
-            const { data } = await axios.get(
-                `/api/message/${SelectedChat._id}`,
-                Config
-            );
-            setMessages(data);
-            // setIsMessageLoading(false);
-        } catch (error) {
-            console.error(error.message);
-        }
-    };
+    
     useEffect(() => {
-        fetchMessages();
+        FetchMessages();
     }, [SelectedChat]);
-
     return (
         <Box
             sx={{
