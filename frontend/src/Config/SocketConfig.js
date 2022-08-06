@@ -5,7 +5,7 @@ import io from 'socket.io-client';
 //     return ;
 // }
 
-const Socket = io('http://localhost:5001')
+const Socket = io('https://mern-chat-app-in.herokuapp.com/')
 
  
 export {Socket}
