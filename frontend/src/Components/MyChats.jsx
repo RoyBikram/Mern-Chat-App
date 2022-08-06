@@ -9,6 +9,7 @@ import { blue, grey } from '@mui/material/colors';
 import { ChatListItem } from './miscellanceos/ChatListItem';
 import { getSender } from '../Config/ChatLogic';
 import CreateGroupDrawer from './miscellanceos/CreateGroupDrawer';
+import { Socket } from '../Config/SocketConfig';
 export const MyChats = () => {
     const { user, SelectedChat, setSelectedChat,FetchChatAgain, Chats, setChats } =
         ChatState();
@@ -30,7 +31,17 @@ export const MyChats = () => {
     const ToggleDrawer = () => {
         setDisplayDrawer(!DisplayDrawer);
     };
-
+    useEffect(() => {
+        Socket.removeAllListeners('add friend');
+        Socket.on('add friend', (chat) => {
+            setChats([chat,...Chats])
+        })
+        Socket.removeAllListeners('new group');
+        Socket.on('new group', (chat) => { 
+            setChats([chat,...Chats])
+         })
+    })
+    
     useEffect(() => {
         fetchChat();
     }, [FetchChatAgain]);
@@ -44,6 +55,7 @@ export const MyChats = () => {
                 display: 'flex',
                 flexDirection: 'column',
                 transition: '2s all',
+                overflow:'hidden',
                 '@media screen and (min-width: 700px)': {
                     width: '34%',
                     maxWidth: '400px',
@@ -114,23 +126,41 @@ export const MyChats = () => {
                     pb: 1,
 
                     backgroundColor: grey[50],
+                    /* width */
+                '&::-webkit-scrollbar': {
+                    width: '5px',
+                },
+
+                /* Handle */
+                '&::-webkit-scrollbar-thumb': {
+                    background: grey[400],
+                    borderRadius:'8px'
+                },
+
+                /* Handle on hover */
+                '&::-webkit-scrollbar-thumb:hover': {
+                    background: grey[500],
+                    borderRadius:'8px'
+                },
                 }}
             >
                 {Chats.map((Chat, index) => {
                     return (<ChatListItem
                         key={index}
                         //TODO: Change the group icon to pic
-                        user={
+                        chatUser={
                             Chat.isGroupChat
                                 ? { name: Chat.chatName, pic: `https://img.icons8.com/external-febrian-hidayat-glyph-febrian-hidayat/344/external-group-user-interface-febrian-hidayat-glyph-febrian-hidayat.png` }
                                 : getSender(user, Chat.users)
                         }
+                        latestMessage={Chat.latestMessage }
                         isSelected={
                             SelectedChat && SelectedChat._id === Chat._id
                         }
                         handleClick={() => {
                             setSelectedChat(Chat);
                         }}
+                        isGroupChat={Chat.isGroupChat}
                     />)
                     })}
             </Stack>

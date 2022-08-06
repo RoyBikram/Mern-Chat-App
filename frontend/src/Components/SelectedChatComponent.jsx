@@ -3,7 +3,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import { ChatState } from '../Context/ChatProvider';
 import ArrowBackIosRoundedIcon from '@mui/icons-material/ArrowBackIosRounded';
 import { blue, grey } from '@mui/material/colors';
-import { getSender } from '../Config/ChatLogic';
+import { fetchLatestMessage, getSender } from '../Config/ChatLogic';
 import { ProfileModal } from './miscellanceos/ProfileModal';
 import { GroupModal } from './miscellanceos/GroupModal';
 import UpdateGroupDrawer from './miscellanceos/UpdateGroupDrawer';
@@ -12,50 +12,102 @@ import { MessageRenderingSection } from './SelectedChat/MessageRenderingSection'
 import { Socket } from '../Config/SocketConfig';
 import SendIcon from '@mui/icons-material/Send';
 import axios from 'axios';
+import Lottie from 'lottie-web';
 export const SelectedChatComponent = () => {
-    const { user, SelectedChat, setSelectedChat,NewMessage } = ChatState();
+    const { user, SelectedChat, setSelectedChat, Chats, setChats, NewMessage } =
+        ChatState();
     const [ReceiverUser, setReceiverUser] = useState(null);
     const [IsOpen, setIsOpen] = useState(false);
     const [DisplayProfile, setDisplayProfile] = useState(false);
     const [DisplayGroup, setDisplayGroup] = useState(false);
     const [DisplayUpdateDrawer, setDisplayUpdateDrawer] = useState(false);
     const [MessagesOfChat, setMessagesOfChat] = useState();
-
+    const [IsMessageLoading, setIsMessageLoading] = useState(false);
+    const [Typing, setTyping] = useState(false)
+    const [IsTyping, setIsTyping] = useState(false)
     // const ENDPOINT = 'http://localhost:5001'
     // var Socket, SelectedChatCompare;
 
-
     const formRef = useRef();
     const inputRef = useRef();
+    const ChattingAnimation = useRef();
+
+    const handleInputFocusInMobile = () => {};
+
+    const setLatestMessageToChats = (ChatId, Message) => {
+        const LatestChats = Chats.map((Chat) => {
+            if (ChatId === Chat._id) {
+                Chat.latestMessage = Message;
+            }
+            return Chat;
+        });
+        alignChatsAfterLatestMessage(ChatId,LatestChats)
+    };
+    const alignChatsAfterLatestMessage = (ChatId, Chats) => { 
+        var LatestChat;
+        const AlignedChats = Chats.filter((Chat) => { 
+            if (ChatId === Chat._id) {
+                LatestChat = Chat
+            } else {
+                
+                return Chat
+            }
+        })
+        // console.log()
+        setChats([LatestChat, ...AlignedChats])
+        
+     }
 
     const handleMessageSend = async (event) => {
         // To Work The Required Field
         formRef.current.reportValidity();
         event.preventDefault();
-        const message = inputRef.current.value
-        inputRef.current.value = ''
+        const message = inputRef.current.value;
+        inputRef.current.value = '';
         try {
             const Config = {
                 headers: {
                     'Content-Type': 'application/json',
-                    Authorization:`Bearer ${user.token}`
-                }
-            }
-            const { data } = await axios.post('/api/message', {
-                content:message,
-                chatId: SelectedChat._id
-            }, Config)
+                    Authorization: `Bearer ${user.token}`,
+                },
+            };
+            const { data } = await axios.post(
+                '/api/message',
+                {
+                    content: message,
+                    chatId: SelectedChat._id,
+                },
+                Config
+            );
             // console.log(data)
-            Socket.emit("new message", data)
-            setMessagesOfChat([...MessagesOfChat,data])
-            // TODO! Have to add message to the local messages but i want to feach this data from server real time
+            Socket.emit('new message', data);
+            setLatestMessageToChats(data.chat._id, data);
+            setMessagesOfChat([...MessagesOfChat, data]);
+            Socket.emit('stop typing', SelectedChat._id)
         } catch (error) {
-            console.log(error.message)
+            console.log(error.message);
         }
     };
-    const typingMessage = (event) => {
-    };
+    var Timer;
+    const typingHandler = () => {
+        if (!Typing) {
+            setTyping(true)
+            Socket.emit('typing',SelectedChat._id)
+        }
+        const lastTypingTime = new Date().getTime()
+        const timerLength = 3000;
+        clearTimeout(Timer)
+        Timer = setTimeout(() => {
+            var timenow = new Date().getTime()
+            var timeDiff = timenow - lastTypingTime
+            if (timeDiff >= timerLength && Typing) {
+                Socket.emit('stop typing', SelectedChat._id)
+                setTyping(false)
+            }
+        }, timerLength);
 
+    };
+    
 
     const handleAvatarClick = () => {
         if (SelectedChat.isGroupChat) {
@@ -63,7 +115,7 @@ export const SelectedChatComponent = () => {
         } else {
             setDisplayProfile((state) => !state);
         }
-        console.log(SelectedChat)
+        console.log(SelectedChat);
     };
 
     // * Toggle ProfileModal
@@ -83,7 +135,7 @@ export const SelectedChatComponent = () => {
 
     const fetchMessages = async () => {
         if (!SelectedChat) return;
-        // setIsMessageLoading(true);
+        setIsMessageLoading(true);
         try {
             const Config = {
                 headers: {
@@ -95,18 +147,31 @@ export const SelectedChatComponent = () => {
                 Config
             );
             setMessagesOfChat(data);
-            // setIsMessageLoading(false);
+            setIsMessageLoading(false);
         } catch (error) {
             console.error(error.message);
         }
     };
+    var instance;
+    useEffect(() => {
+        instance = Lottie.loadAnimation({
+            container: ChattingAnimation.current,
+            loop: true,
+            autoplay: true,
+            renderer: 'svg',
+            animationData: require('../Res/Json/ChatPageAnimation.json'),
+        });
+        return () => instance.destroy();
+    });
 
     useEffect(() => {
-        if (NewMessage ) {
-            MessagesOfChat ? setMessagesOfChat([...MessagesOfChat,NewMessage]):setMessagesOfChat([NewMessage])
+        if (NewMessage) {
+            MessagesOfChat
+                ? setMessagesOfChat([...MessagesOfChat, NewMessage])
+                : setMessagesOfChat([NewMessage]);
         }
-    }, [NewMessage])
-    
+    }, [NewMessage]);
+
     useEffect(() => {
         if (SelectedChat) {
             setIsOpen(true);
@@ -120,11 +185,22 @@ export const SelectedChatComponent = () => {
                       }
                     : getSender(user, SelectedChat.users)
             );
-
+            instance.destroy();
             Socket.emit('join room', SelectedChat._id);
+            Socket.removeAllListeners('typing');
+            Socket.removeAllListeners('stop typing');
+            Socket.on('typing', (ChatId) => {
+                if (ChatId === SelectedChat._id) {
+                    
+                    setIsTyping(true)
+                }
+            })
+            Socket.on('stop typing',(ChatId) => { if (ChatId === SelectedChat._id) {
+                setIsTyping(false)
+            } })
         }
-    }, [SelectedChat]);
-// console.log(SelectedChat)
+    }, [SelectedChat?._id]);
+    // console.log(SelectedChat)
     return (
         <Box
             sx={{
@@ -200,6 +276,8 @@ export const SelectedChatComponent = () => {
                         </Box>
                     </Box>
                     <MessageRenderingSection
+                        IsTyping = {IsTyping}
+                        IsMessageLoading={IsMessageLoading}
                         Messages={MessagesOfChat}
                         FetchMessages={fetchMessages}
                     />
@@ -219,6 +297,7 @@ export const SelectedChatComponent = () => {
                             component='input'
                             ref={inputRef}
                             required
+                            onChange={typingHandler}
                             sx={{
                                 fontSize: '16px',
                                 color: grey[900],
@@ -243,7 +322,16 @@ export const SelectedChatComponent = () => {
                     </Box>
                 </Box>
             ) : (
-                <Box></Box>
+                <Box
+                    sx={{
+                        height: '100%',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                    }}
+                >
+                    <Box sx={{ height: '33%' }} ref={ChattingAnimation}></Box>
+                </Box>
             )}
             {DisplayProfile && (
                 <ProfileModal

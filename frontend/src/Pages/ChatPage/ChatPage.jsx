@@ -7,9 +7,10 @@ import { Grid, Stack } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import { Socket } from '../../Config/SocketConfig';
 import { ChatState } from '../../Context/ChatProvider';
+import { fetchLatestMessage } from '../../Config/ChatLogic';
 
 const ChatPage = () => {
-    const { user, SelectedChat, setNewMessage } = ChatState();
+    const { user, SelectedChat, setNewMessage, Chats, setChats } = ChatState();
     const Navigate = useNavigate();
 
     useEffect(() => {
@@ -24,17 +25,53 @@ const ChatPage = () => {
     });
 
     useEffect(() => {
-        if (user) {
-            Socket.on('message received', (message) => {
-                console.log(SelectedChat)
-                if (message.chat._id === SelectedChat._id) {
-                    setNewMessage(message);
-                } else {
-                    console.log(message.sender.name + ' : ' + message.content);
-                }
-            });
+        if (SelectedChat) {
+            // console.log(SelectedChat._id)
         }
-    }, [SelectedChat]);
+    }, [SelectedChat?._id]);
+
+    const setLatestMessageToChats = (ChatId, Message) => {
+        const LatestChats = Chats.map((Chat) => {
+            if (ChatId === Chat._id) {
+                Chat.latestMessage = Message;
+            }
+            return Chat;
+        });
+        alignChatsAfterLatestMessage(ChatId, LatestChats);
+    };
+    const alignChatsAfterLatestMessage = (ChatId, Chats) => {
+        var LatestChat;
+        const AlignedChats = Chats.filter((Chat) => {
+            if (ChatId === Chat._id) {
+                LatestChat = Chat;
+            } else {
+                return Chat;
+            }
+        });
+        console.log();
+        setChats([LatestChat, ...AlignedChats]);
+    };
+
+    useEffect(() => {
+        var ChatId = SelectedChat?._id;
+        if (user) {
+            Socket.removeAllListeners('message received');
+            if (ChatId) {
+                Socket.on('message received', (message) => {
+                    if (message.chat._id === ChatId) {
+                        setNewMessage(message);
+                        setLatestMessageToChats(message.chat._id, message);
+                    } else {
+                        setLatestMessageToChats(message.chat._id, message);
+                    }
+                });
+            } else {
+                Socket.on('message received', (message) => {
+                    setLatestMessageToChats(message.chat._id, message);
+                });
+            }
+        }
+    });
 
     return (
         <>
@@ -43,6 +80,7 @@ const ChatPage = () => {
                     sx={{
                         maxWidth: '1300px',
                         width: '100%',
+                        height: '100vh',
                         mr: 'auto',
                         ml: 'auto',
                         p: {
@@ -61,9 +99,13 @@ const ChatPage = () => {
                         direction='row'
                         spacing={2}
                         sx={{
-                            width: '100%',
-                            flexGrow: 1,
+                            // width: '100%',
+                            // flexGrow: 1,
                             position: 'relative',
+                            height: {
+                                xs: 'calc(100vh - 63px)',
+                                sm: '85vh',
+                            },
                         }}
                     >
                         <MyChats />

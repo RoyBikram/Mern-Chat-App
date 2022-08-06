@@ -154,7 +154,7 @@ export const Header = () => {
                 ></Box>
 
                 <Box sx={{ display: 'flex', alignItems: 'center',gap:1 }}>
-                    <IconButton onClick={handleNotificationClick}>
+                    {/* <IconButton onClick={handleNotificationClick}>
                         <Badge badgeContent={1} color='primary'>
                             <NotificationsNoneRoundedIcon color='action' />
                         </Badge>
@@ -184,7 +184,7 @@ export const Header = () => {
                         >
                             No Notification
                         </MenuItem>
-                    </Menu>
+                    </Menu> */}
                     <IconButton onClick={handleAvatarClick} sx={{p:0}}>
                         <Avatar
                             alt={user.name}

@@ -26,6 +26,7 @@ import ClearRoundedIcon from '@mui/icons-material/ClearRounded';
 import TabContext from '@mui/lab/TabContext';
 import TabPanel from '@mui/lab/TabPanel';
 import ArrowBackIosRoundedIcon from '@mui/icons-material/ArrowBackIosRounded';
+import { Socket } from '../../Config/SocketConfig';
 const CreateGroupDrawer = ({ DisplayDrawer, ToggleDrawer }) => {
     const { user, setSelectedChat,SelectedChat, Chats, setChats } = ChatState();
     const formRef = useRef();
@@ -81,8 +82,10 @@ const CreateGroupDrawer = ({ DisplayDrawer, ToggleDrawer }) => {
                 users: JSON.stringify(SelectedUsers.map((u) => u._id)),
             },Config);
             setChats([data[0], ...Chats])
+            Socket.emit('new group',data[0])
             setGroupLoading(false)
             // TODO Display a toust that group has created
+
             handleDrawerClose()
         } catch (error) {
             console.error(error.message);

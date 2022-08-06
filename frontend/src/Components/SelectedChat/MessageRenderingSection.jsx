@@ -1,33 +1,73 @@
-import { CircularProgress } from '@mui/material';
-import { blue } from '@mui/material/colors';
+import { Avatar, CircularProgress } from '@mui/material';
+import { blue, grey } from '@mui/material/colors';
 import { Box } from '@mui/system';
 import axios from 'axios';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { ChatState } from '../../Context/ChatProvider';
 import MessageBodyBg from '../../Res/Img/MessageBodyBg.png';
 import MessageCard from '../miscellanceos/MessageCard';
+import Lottie from 'lottie-web';
 
-export const MessageRenderingSection = ({Messages, FetchMessages}) => {
+export const MessageRenderingSection = ({
+    Messages,
+    FetchMessages,
+    IsMessageLoading,
+    IsTyping,
+}) => {
     // const [Messages, setMessages] = useState(null);
-    // const [IsMessageLoading, setIsMessageLoading] = useState(false);
     const { user, SelectedChat } = ChatState();
-
-    
+    const ScrollDown = useRef();
+    const TypingAni = useRef();
     useEffect(() => {
         FetchMessages();
-    }, [SelectedChat]);
+    }, [SelectedChat?._id]);
+
+    useEffect(() => {
+        ScrollDown.current?.scrollIntoView({
+            behavior: 'smooth',
+        });
+        const instance = Lottie.loadAnimation({
+            container: TypingAni.current,
+            loop: true,
+            autoplay: true,
+            renderer: 'svg',
+            animationData: require('../../Res/Json/TypingAnimation.json'),
+        });
+        return () => instance.destroy();
+    });
+
     return (
         <Box
             sx={{
-                flexGrow: 1,
-                display: 'flex',
+                // flexGrow: 1,
+                height: '100%',
+                overflowY: 'auto',
+                widows: '100%',
+                position: 'relative',
+
+                backgroundColor: grey[100],
+                display: `${!Messages || IsMessageLoading ? 'flex' : 'block'}`,
                 justifyContent: 'center',
                 alignItems: 'center',
-                position: 'relative',
-                py: 2,
+                /* width */
+                '&::-webkit-scrollbar': {
+                    width: '5px',
+                },
+
+                /* Handle */
+                '&::-webkit-scrollbar-thumb': {
+                    background: '#0084ff',
+                    borderRadius:'8px'
+                },
+
+                /* Handle on hover */
+                '&::-webkit-scrollbar-thumb:hover': {
+                    background: '#006fd6',
+                    borderRadius:'8px'
+                },
             }}
         >
-            {!Messages ? (
+            {!Messages || IsMessageLoading ? (
                 <Box>
                     <CircularProgress />
                 </Box>
@@ -35,53 +75,88 @@ export const MessageRenderingSection = ({Messages, FetchMessages}) => {
                 <>
                     <Box
                         sx={{
-                            height: '100%',
+                            height: '-webkit-fill-available',
+                            height: 'fit-content',
+                            boxSizing: 'border-box',
                             width: '100%',
                             zIndex: '1',
                             display: 'flex',
-                            flexDirection: 'column',
-                            gap: '3px',
-                                px: {
-                                    sm: 5,
-                                    xs:2
+                                flexDirection: 'column',
+                            px: {
+                                sm: 5,
+                                xs: 2,
                             },
-                            my: 2,
+                            pt: 2,
+                                pb: 1,
+                            // my: 2,
+                            
                         }}
                     >
                         {Messages &&
                             Messages.map((Message, index) => {
-                                var IsLast = false;
-                                if (index<Messages.length-1) {
+                                var IsLast;
+                                var IsOwnMessage = false;
+                                if (index < Messages.length - 1) {
                                     if (
                                         Message.sender._id !==
                                         Messages[index + 1].sender._id
                                     ) {
                                         IsLast = true;
-                                    } 
+                                    } else {
+                                        IsLast = false;
+                                    }
                                 } else {
-                                var IsLast = true;
+                                    var IsLast = true;
+                                }
+                                if (Message.sender._id === user._id) {
+                                    IsOwnMessage = true
                                 }
                                 return (
                                     <MessageCard
                                         key={index}
                                         IsLast={IsLast}
                                         Data={Message}
+                                        IsOwnMessage= {IsOwnMessage}
                                     />
                                 );
                             })}
+                        {/* Typing animation */}
+                        {IsTyping ? (
+                            <Box
+                                sx={{
+                                    display: 'flex',
+                                    alignItems: 'end',
+                                    my: '-2px',
+                                    ml: '38px',
+                                    flexDirection: 'row',
+                                    alignSelf: 'start',
+                                    position: 'relative',
+                                    height: '40px',
+                                        width: '100px',
+                                    overflow:'hidden',
+                                }}
+                            >
+                                <Box
+                                    ref={TypingAni}
+                                    sx={{
+                                        ml: '38px',
+                                        height: '100px',
+                                        width: '100px',
+                                        transform:
+                                            'scaleX(-1) translate(0%,-50%)',
+                                        position: 'absolute',
+                                        top: '50%',
+                                        left: '-60%',
+                                    }}
+                                >
+                                </Box>
+                            </Box>
+                        ) : (
+                            <></>
+                        )}
+
+                        <Box ref={ScrollDown}></Box>
                     </Box>
-                    <Box
-                        sx={{
-                            backgroundImage: `url(${MessageBodyBg})`,
-                            height: '100%',
-                            width: '100%',
-                            position: 'absolute',
-                            backgroundPosition: 'center',
-                            backgroundSize: 'contain',
-                            filter: 'opacity(0.15)',
-                            backgroundColor: '#d4e9fb',
-                        }}
-                    ></Box>
                 </>
             )}
         </Box>

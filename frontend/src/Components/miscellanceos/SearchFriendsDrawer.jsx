@@ -17,6 +17,7 @@ import axios from 'axios';
 import { ChatState } from '../../Context/ChatProvider';
 import { UserListItem } from './UserListItem';
 import ClearRoundedIcon from '@mui/icons-material/ClearRounded';
+import { Socket } from '../../Config/SocketConfig';
 
 const SearchFriendsDrawer = ({ DrawerDisplay, ToggleDrawer }) => {
     const { user, setSelectedChat, Chats, setChats } = ChatState();
@@ -64,9 +65,14 @@ const SearchFriendsDrawer = ({ DrawerDisplay, ToggleDrawer }) => {
                 { receiverUserId },
                 Config
             );
-            !Chats.find((Chat) => Chat._id === data._id)
-                ? setChats([data, ...Chats])
-                : setSelectedChat(data);
+            if (!Chats.find((Chat) => Chat._id === data._id)) {
+                setChats([data, ...Chats]);
+                Socket.emit('add friend', {data,receiverUserId})
+                setSelectedChat(data);
+            } else {
+                setSelectedChat(data);
+            }
+
             setChatLoading(false);
             setSearchResult([]);
             ToggleDrawer();

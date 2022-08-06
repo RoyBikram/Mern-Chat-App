@@ -3,13 +3,14 @@ import { blue } from '@mui/material/colors';
 import React, { useEffect, useState } from 'react';
 import { ChatState } from '../../Context/ChatProvider';
 
-function MessageCard({ Data, IsLast }) {
-    const [IsOwnMessage, setIsOwnMessage] = useState(false);
+function MessageCard({ Data, IsLast,IsOwnMessage }) {
+    // const [IsOwnMessage, setIsOwnMessage] = useState(false);
     const { user } = ChatState();
     useEffect(() => {
-        if (Data.sender._id === user._id) {
-            setIsOwnMessage(true);
-        }
+        // TODO : Have to do this IsOWnMessage Logic outside becouse of it delay of value change it show some glichin
+        // if (Data.sender._id === user._id) {
+        //     setIsOwnMessage(true);
+        // }
     }, []);
     
     return (
@@ -18,6 +19,7 @@ function MessageCard({ Data, IsLast }) {
                 display: 'flex',
                 gap: 1,
                 alignItems: 'end',
+                my:'3px',
                 flexDirection:`${IsOwnMessage ? 'row-reverse' : 'row'}`,
                 alignSelf: `${IsOwnMessage ? 'end' : 'start'}`,
             }}
@@ -43,6 +45,8 @@ function MessageCard({ Data, IsLast }) {
                     },
                     // width:'70%',
                     fontSize: '15px',
+                    borderBottomLeftRadius:`${IsLast && !IsOwnMessage ? '5px' : '20px'}`,
+                    borderBottomRightRadius:`${IsLast && IsOwnMessage ? '5px' : '20px'}`,
                 }}
             >
                 {Data.content}
