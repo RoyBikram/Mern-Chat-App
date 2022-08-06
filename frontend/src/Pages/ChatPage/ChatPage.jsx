@@ -106,6 +106,9 @@ const ChatPage = () => {
                                 xs: 'calc(100vh - 63px)',
                                 sm: '85vh',
                             },
+                            '@media screen and (max-width: 700px)': {
+                                overflow:'hidden',
+                            }
                         }}
                     >
                         <MyChats />

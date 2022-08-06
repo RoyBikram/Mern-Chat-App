@@ -22,6 +22,15 @@ export const MessageRenderingSection = ({
         FetchMessages();
     }, [SelectedChat?._id]);
 
+    // To Scroll down on keyboard open
+    useEffect(() => {
+        window.visualViewport.addEventListener('resize', () => {
+            ScrollDown.current?.scrollIntoView({
+                behavior: 'smooth',
+            });
+        });
+    });
+
     useEffect(() => {
         ScrollDown.current?.scrollIntoView({
             behavior: 'smooth',
@@ -57,13 +66,13 @@ export const MessageRenderingSection = ({
                 /* Handle */
                 '&::-webkit-scrollbar-thumb': {
                     background: '#0084ff',
-                    borderRadius:'8px'
+                    borderRadius: '8px',
                 },
 
                 /* Handle on hover */
                 '&::-webkit-scrollbar-thumb:hover': {
                     background: '#006fd6',
-                    borderRadius:'8px'
+                    borderRadius: '8px',
                 },
             }}
         >
@@ -81,15 +90,14 @@ export const MessageRenderingSection = ({
                             width: '100%',
                             zIndex: '1',
                             display: 'flex',
-                                flexDirection: 'column',
+                            flexDirection: 'column',
                             px: {
                                 sm: 5,
                                 xs: 2,
                             },
                             pt: 2,
-                                pb: 1,
+                            pb: 1,
                             // my: 2,
-                            
                         }}
                     >
                         {Messages &&
@@ -109,14 +117,14 @@ export const MessageRenderingSection = ({
                                     var IsLast = true;
                                 }
                                 if (Message.sender._id === user._id) {
-                                    IsOwnMessage = true
+                                    IsOwnMessage = true;
                                 }
                                 return (
                                     <MessageCard
                                         key={index}
                                         IsLast={IsLast}
                                         Data={Message}
-                                        IsOwnMessage= {IsOwnMessage}
+                                        IsOwnMessage={IsOwnMessage}
                                     />
                                 );
                             })}
@@ -132,8 +140,8 @@ export const MessageRenderingSection = ({
                                     alignSelf: 'start',
                                     position: 'relative',
                                     height: '40px',
-                                        width: '100px',
-                                    overflow:'hidden',
+                                    width: '100px',
+                                    overflow: 'hidden',
                                 }}
                             >
                                 <Box
@@ -148,8 +156,7 @@ export const MessageRenderingSection = ({
                                         top: '50%',
                                         left: '-60%',
                                     }}
-                                >
-                                </Box>
+                                ></Box>
                             </Box>
                         ) : (
                             <></>

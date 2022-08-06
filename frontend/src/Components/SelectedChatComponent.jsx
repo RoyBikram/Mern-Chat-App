@@ -64,6 +64,7 @@ export const SelectedChatComponent = () => {
         event.preventDefault();
         const message = inputRef.current.value;
         inputRef.current.value = '';
+        inputRef.current.focus()
         try {
             const Config = {
                 headers: {
@@ -207,7 +208,7 @@ export const SelectedChatComponent = () => {
                 backgroundColor: 'white',
                 height: '100%',
                 display: 'block',
-                transition: '0.5s all',
+                transition: 'all 0.5s',
                 '@media screen and (min-width: 700px)': {
                     flexGrow: 1,
                 },
@@ -327,7 +328,10 @@ export const SelectedChatComponent = () => {
                         height: '100%',
                         display: 'flex',
                         alignItems: 'center',
-                        justifyContent: 'center',
+                            justifyContent: 'center',
+                            '@media screen and (max-width: 700px)': {
+                                display:'none'
+                            }
                     }}
                 >
                     <Box sx={{ height: '33%' }} ref={ChattingAnimation}></Box>
