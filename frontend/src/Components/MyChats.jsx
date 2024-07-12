@@ -1,5 +1,5 @@
 import { Box } from '@mui/system';
-import axios from 'axios';
+import {axiosWithBase as axios} from '../Config/Axios'
 import React, { useEffect, useState } from 'react';
 import { ChatState } from '../Context/ChatProvider';
 import Stack from '@mui/material/Stack';
